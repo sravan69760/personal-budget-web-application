@@ -64,6 +64,7 @@ export default function Dashboard() {
                 ]}
                 rows={summary.spendingByPaymentMethod || []}
                 emptyMessage="No payment method spending yet."
+                compact
               />
             </section>
             <section className="panel">
@@ -75,6 +76,7 @@ export default function Dashboard() {
                 ]}
                 rows={summary.spendingByCategory || []}
                 emptyMessage="No category spending yet."
+                compact
               />
             </section>
           </div>
@@ -92,6 +94,7 @@ export default function Dashboard() {
                 ]}
                 rows={summary.upcomingBills}
                 emptyMessage="No upcoming bills."
+                compact
               />
             </section>
             <section className="panel">
@@ -105,6 +108,7 @@ export default function Dashboard() {
                 ]}
                 rows={summary.recentExpenses}
                 emptyMessage="No recent expenses."
+                compact
               />
             </section>
           </div>

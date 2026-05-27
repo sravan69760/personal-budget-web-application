@@ -4,7 +4,6 @@ const express = require("express");
 const multer = require("multer");
 const { all, get, run } = require("../db");
 const { toNumber } = require("../utils");
-const { extractDocumentData } = require("../documentExtractor");
 
 const router = express.Router();
 const uploadDir = path.join(__dirname, "..", "..", "uploads");
@@ -59,11 +58,10 @@ router.post("/upload", upload.single("file"), async (req, res, next) => {
       payment_method
     } = req.body;
     const relativePath = `/uploads/${req.file.filename}`;
-    const extracted = await extractDocumentData(req.file);
-    const numericAmount = toNumber(amount) || extracted.amount;
-    const documentDate = due_date || extracted.due_date || new Date().toISOString().slice(0, 10);
-    const documentVendor = vendor || extracted.vendor || "";
-    const documentTitle = title || documentVendor || req.file.originalname;
+    const numericAmount = toNumber(amount);
+    const documentDate = due_date || new Date().toISOString().slice(0, 10);
+    const documentVendor = vendor || "";
+    const documentTitle = title || req.file.originalname;
     const result = await run(
       `INSERT INTO documents
         (title, vendor, amount, category, due_date, status, file_path, original_name, document_type)

@@ -1,6 +1,6 @@
-export default function DataTable({ columns, rows, emptyMessage = "No records yet.", actions }) {
+export default function DataTable({ columns, rows, emptyMessage = "No records yet.", actions, compact = false }) {
   return (
-    <div className="table-wrap">
+    <div className={`table-wrap ${compact ? "compact-table" : ""}`}>
       <table>
         <thead>
           <tr>

@@ -22,16 +22,6 @@ function titleFromFileName(name) {
     .trim();
 }
 
-function amountFromFileName(name) {
-  const match = name.match(/(?:\$|usd\s*)?(\d+(?:\.\d{2})?)/i);
-  return match ? match[1] : "";
-}
-
-function dateFromFileName(name) {
-  const match = name.match(/(20\d{2})[-_](\d{2})[-_](\d{2})/);
-  return match ? `${match[1]}-${match[2]}-${match[3]}` : "";
-}
-
 export default function DocumentUploadForm({ categories, onSubmit }) {
   const [form, setForm] = useState(initialState);
 
@@ -42,9 +32,7 @@ export default function DocumentUploadForm({ categories, onSubmit }) {
       setForm({
         ...form,
         file,
-        title: form.title || titleFromFileName(file.name),
-        amount: form.amount || amountFromFileName(file.name),
-        due_date: form.due_date || dateFromFileName(file.name)
+        title: form.title || titleFromFileName(file.name)
       });
       return;
     }
@@ -82,7 +70,7 @@ export default function DocumentUploadForm({ categories, onSubmit }) {
           step="0.01"
           value={form.amount}
           onChange={updateField}
-          placeholder="Auto-read if possible"
+          required
         />
       </label>
       <label>

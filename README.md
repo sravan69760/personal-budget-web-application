@@ -60,7 +60,7 @@ The frontend runs at `http://localhost:5173`.
 - Expense CRUD with month, category, and payment method filters
 - Income CRUD
 - Local PDF/JPG/JPEG/PNG bill and receipt upload
-- Best-effort local amount/date/vendor extraction from uploaded PDFs and images
+- Manual amount, category, date, and payment method entry for uploaded bills and receipts
 - Automatic expense creation from uploaded document amounts
 - Monthly category budgets with usage and over-budget warnings
 - Default categories seeded into SQLite on first run

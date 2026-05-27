@@ -277,6 +277,17 @@ table {
   min-width: 680px;
 }
 
+.compact-table table {
+  min-width: 0;
+  table-layout: auto;
+}
+
+.compact-table th,
+.compact-table td {
+  width: auto;
+  white-space: normal;
+}
+
 th,
 td {
   border-bottom: 1px solid #e4e9e6;
