@@ -33,7 +33,7 @@ export default function Dashboard() {
       <div className="page-header">
         <div>
           <h2>Dashboard</h2>
-          <p>Month overview, budget progress, and upcoming payments.</p>
+          <p>Month overview, spending methods, categories, and upcoming bills.</p>
         </div>
         <input type="month" value={month} onChange={(event) => setMonth(event.target.value)} />
       </div>

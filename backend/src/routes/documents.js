@@ -4,6 +4,7 @@ const express = require("express");
 const multer = require("multer");
 const { all, get, run } = require("../db");
 const { toNumber } = require("../utils");
+const { extractDocumentData } = require("../documentExtractor");
 
 const router = express.Router();
 const uploadDir = path.join(__dirname, "..", "..", "uploads");
@@ -58,17 +59,21 @@ router.post("/upload", upload.single("file"), async (req, res, next) => {
       payment_method
     } = req.body;
     const relativePath = `/uploads/${req.file.filename}`;
-    const numericAmount = toNumber(amount);
+    const extracted = await extractDocumentData(req.file);
+    const numericAmount = toNumber(amount) || extracted.amount;
+    const documentDate = due_date || extracted.due_date || new Date().toISOString().slice(0, 10);
+    const documentVendor = vendor || extracted.vendor || "";
+    const documentTitle = title || documentVendor || req.file.originalname;
     const result = await run(
       `INSERT INTO documents
         (title, vendor, amount, category, due_date, status, file_path, original_name, document_type)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
-        title,
-        vendor || "",
+        documentTitle,
+        documentVendor,
         numericAmount,
         category || "Other",
-        due_date || "",
+        documentDate,
         status || "pending",
         relativePath,
         req.file.originalname,
@@ -77,15 +82,15 @@ router.post("/upload", upload.single("file"), async (req, res, next) => {
     );
     const created = await get("SELECT * FROM documents WHERE id = ?", [result.id]);
 
-    if (auto_create_expense === "true" && numericAmount && due_date) {
+    if (auto_create_expense === "true" && numericAmount) {
       await run(
         `INSERT INTO expenses (amount, category, description, expense_date, payment_method)
          VALUES (?, ?, ?, ?, ?)`,
         [
           numericAmount,
           category || "Other",
-          `${document_type || "document"}: ${title}`,
-          due_date,
+          `${document_type || "document"}: ${documentTitle}`,
+          documentDate,
           payment_method || "Debit Card"
         ]
       );

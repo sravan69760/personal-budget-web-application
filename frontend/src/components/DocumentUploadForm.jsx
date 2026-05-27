@@ -8,7 +8,7 @@ const initialState = {
   category: "Other",
   due_date: "",
   status: "pending",
-  document_type: "bill",
+  document_type: "receipt",
   auto_create_expense: true,
   payment_method: "Debit Card",
   file: null
@@ -76,7 +76,14 @@ export default function DocumentUploadForm({ categories, onSubmit }) {
       </label>
       <label>
         Amount
-        <input name="amount" type="number" step="0.01" value={form.amount} onChange={updateField} />
+        <input
+          name="amount"
+          type="number"
+          step="0.01"
+          value={form.amount}
+          onChange={updateField}
+          placeholder="Auto-read if possible"
+        />
       </label>
       <label>
         Category
@@ -89,7 +96,7 @@ export default function DocumentUploadForm({ categories, onSubmit }) {
         </select>
       </label>
       <label>
-        Due Date
+        Date
         <input name="due_date" type="date" value={form.due_date} onChange={updateField} />
       </label>
       <label>
@@ -101,11 +108,11 @@ export default function DocumentUploadForm({ categories, onSubmit }) {
         </select>
       </label>
       <label>
-        Type
+        Document Type
         <select name="document_type" value={form.document_type} onChange={updateField}>
+          <option value="receipt">receipt</option>
           <option value="bill">bill</option>
           <option value="invoice">invoice</option>
-          <option value="receipt">receipt</option>
         </select>
       </label>
       <label>
@@ -129,7 +136,7 @@ export default function DocumentUploadForm({ categories, onSubmit }) {
           checked={form.auto_create_expense}
           onChange={updateField}
         />
-        Add this document amount to expenses
+        Add this amount to expenses and budget totals
       </label>
       <div className="form-actions wide">
         <button type="submit">Upload Document</button>

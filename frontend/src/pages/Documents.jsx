@@ -48,12 +48,12 @@ export default function Documents() {
       <div className="page-header">
         <div>
           <h2>Documents</h2>
-          <p>Upload and manage local bills, invoices, and receipts.</p>
+          <p>Upload bills and spending receipts so amounts update your budget.</p>
         </div>
       </div>
       {error ? <p className="error">{error}</p> : null}
       <section className="panel">
-        <h3>Upload Document</h3>
+        <h3>Upload Bill Or Spend</h3>
         <DocumentUploadForm categories={categories} onSubmit={uploadDocument} />
       </section>
       <section className="panel">
@@ -66,7 +66,7 @@ export default function Documents() {
               { key: "vendor", label: "Vendor" },
               { key: "category", label: "Category" },
               { key: "document_type", label: "Type" },
-              { key: "due_date", label: "Due" },
+              { key: "due_date", label: "Date" },
               { key: "amount", label: "Amount", render: (row) => money(row.amount) },
               { key: "status", label: "Status" },
               {

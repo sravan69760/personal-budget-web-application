@@ -59,9 +59,9 @@ The frontend runs at `http://localhost:5173`.
 - Dashboard totals for selected month
 - Expense CRUD with month, category, and payment method filters
 - Income CRUD
-- Local PDF/JPG/JPEG/PNG document upload and viewing
-- Document upload category assignment with simple filename auto-fill for title, amount, and date
-- Optional automatic expense creation from uploaded documents
+- Local PDF/JPG/JPEG/PNG bill and receipt upload
+- Best-effort local amount/date/vendor extraction from uploaded PDFs and images
+- Automatic expense creation from uploaded document amounts
 - Monthly category budgets with usage and over-budget warnings
 - Default categories seeded into SQLite on first run
 
