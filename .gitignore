@@ -2,3 +2,4 @@ node_modules/
 backend/budget.sqlite
 backend/uploads/
 frontend/dist/
+frontend/.vite/
