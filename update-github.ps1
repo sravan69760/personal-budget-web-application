@@ -46,6 +46,7 @@ if (-not $status) {
 }
 
 Invoke-Git commit -m $Message
+Invoke-Git pull --rebase --autostash --allow-unrelated-histories origin main
 Invoke-Git push -u origin main
 
 Write-Host "Pushed latest code to $RepoUrl"
