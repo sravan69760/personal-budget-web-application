@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import api from "../api.js";
-import { currentMonth, money, percent } from "../helpers.js";
+import { money, percent, savedMonth, saveMonth } from "../helpers.js";
 import SummaryCard from "../components/SummaryCard.jsx";
 import DataTable from "../components/DataTable.jsx";
 
 export default function Dashboard() {
-  const [month, setMonth] = useState(currentMonth());
+  const [month, setMonth] = useState(savedMonth());
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -35,7 +35,7 @@ export default function Dashboard() {
           <h2>Dashboard</h2>
           <p>Month overview, spending methods, categories, and upcoming bills.</p>
         </div>
-        <input type="month" value={month} onChange={(event) => setMonth(event.target.value)} />
+        <input type="month" value={month} onChange={(event) => setMonth(saveMonth(event.target.value))} />
       </div>
 
       {error ? <p className="error">{error}</p> : null}
@@ -54,7 +54,35 @@ export default function Dashboard() {
             />
           </div>
 
+          <div className="summary-grid">
+            <SummaryCard label="Credit Card Owed" value={money(summary.creditCards?.totalOwed)} tone="expense" />
+            <SummaryCard label="Credit Limit" value={money(summary.creditCards?.totalLimit)} />
+            <SummaryCard label="Available Credit" value={money(summary.creditCards?.availableCredit)} tone="income" />
+            <SummaryCard label="Credit Card Paid" value={money(summary.creditCards?.totalPaid)} />
+          </div>
+
+          <div className="summary-grid">
+            <SummaryCard label="Bank Balance" value={money(summary.banks?.totalBalance)} tone="income" />
+            <SummaryCard label="Debit Card Spent" value={money(summary.banks?.totalSpent)} tone="expense" />
+            <SummaryCard label="Available Bank Balance" value={money(summary.banks?.availableBalance)} />
+          </div>
+
           <div className="two-column">
+            <section className="panel">
+              <h3>Upcoming Credit Card Payments</h3>
+              <DataTable
+                columns={[
+                  { key: "card_name", label: "Card" },
+                  { key: "bank_name", label: "Bank" },
+                  { key: "due_date", label: "Due" },
+                  { key: "current_balance", label: "Owed", render: (row) => money(row.current_balance) },
+                  { key: "payment_status", label: "Status" }
+                ]}
+                rows={summary.creditCards?.upcomingPayments || []}
+                emptyMessage="No upcoming credit card payments."
+                compact
+              />
+            </section>
             <section className="panel">
               <h3>Spending By Payment Method</h3>
               <DataTable
@@ -67,6 +95,9 @@ export default function Dashboard() {
                 compact
               />
             </section>
+          </div>
+
+          <div className="two-column">
             <section className="panel">
               <h3>Spending By Category</h3>
               <DataTable

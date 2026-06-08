@@ -11,6 +11,8 @@ const initialState = {
   document_type: "receipt",
   auto_create_expense: true,
   payment_method: "Debit Card",
+  credit_card_id: "",
+  bank_account_id: "",
   file: null
 };
 
@@ -22,7 +24,7 @@ function titleFromFileName(name) {
     .trim();
 }
 
-export default function DocumentUploadForm({ categories, onSubmit }) {
+export default function DocumentUploadForm({ categories, creditCards, bankAccounts, onSubmit }) {
   const [form, setForm] = useState(initialState);
 
   function updateField(event) {
@@ -36,7 +38,17 @@ export default function DocumentUploadForm({ categories, onSubmit }) {
       });
       return;
     }
-    setForm({ ...form, [name]: type === "checkbox" ? checked : value });
+    const next = { ...form, [name]: type === "checkbox" ? checked : value };
+    if (name === "payment_method" && value !== "Credit Card" && next.category !== "Credit Card") {
+      next.credit_card_id = "";
+    }
+    if (name === "category" && value !== "Credit Card" && next.payment_method !== "Credit Card") {
+      next.credit_card_id = "";
+    }
+    if (name === "payment_method" && value !== "Debit Card") {
+      next.bank_account_id = "";
+    }
+    setForm(next);
   }
 
   function submit(event) {
@@ -51,6 +63,9 @@ export default function DocumentUploadForm({ categories, onSubmit }) {
     event.target.reset();
     setForm(initialState);
   }
+
+  const needsCreditCard = form.payment_method === "Credit Card" || form.category === "Credit Card";
+  const needsBankAccount = form.payment_method === "Debit Card";
 
   return (
     <form className="form-grid" onSubmit={submit}>
@@ -113,6 +128,32 @@ export default function DocumentUploadForm({ categories, onSubmit }) {
           ))}
         </select>
       </label>
+      {needsCreditCard ? (
+        <label>
+          Credit Card
+          <select name="credit_card_id" value={form.credit_card_id} onChange={updateField} required>
+            <option value="">Select card</option>
+            {creditCards.map((card) => (
+              <option key={card.id} value={card.id}>
+                {card.card_name} - {card.bank_name}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
+      {needsBankAccount ? (
+        <label>
+          Bank Debit Card
+          <select name="bank_account_id" value={form.bank_account_id} onChange={updateField} required>
+            <option value="">Select bank</option>
+            {bankAccounts.map((account) => (
+              <option key={account.id} value={account.id}>
+                {account.debit_card_name || account.account_name} - {account.bank_name}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
       <label className="wide">
         File
         <input name="file" type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={updateField} required />

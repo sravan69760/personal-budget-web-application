@@ -1,11 +1,13 @@
 import { NavLink } from "react-router-dom";
-import { BarChart3, Banknote, FileText, Home, ReceiptText, Settings, WalletCards } from "lucide-react";
+import { BarChart3, Banknote, Building2, CreditCard, FileText, Home, ReceiptText, Settings, WalletCards } from "lucide-react";
 
 const links = [
   { to: "/", label: "Dashboard", icon: Home },
   { to: "/expenses", label: "Expenses", icon: ReceiptText },
   { to: "/income", label: "Income", icon: Banknote },
   { to: "/budgets", label: "Budgets", icon: WalletCards },
+  { to: "/credit-cards", label: "Credit Cards", icon: CreditCard },
+  { to: "/banks", label: "Banks", icon: Building2 },
   { to: "/documents", label: "Documents", icon: FileText },
   { to: "/settings", label: "Settings", icon: Settings }
 ];

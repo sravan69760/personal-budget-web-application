@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import api from "../api.js";
 import BudgetForm from "../components/BudgetForm.jsx";
 import DataTable from "../components/DataTable.jsx";
-import { currentMonth, money, percent } from "../helpers.js";
+import { money, percent, savedMonth, saveMonth } from "../helpers.js";
 
 export default function Budgets() {
   const [budgets, setBudgets] = useState([]);
   const [categories, setCategories] = useState([]);
   const [editing, setEditing] = useState(null);
-  const [month, setMonth] = useState(currentMonth());
+  const [month, setMonth] = useState(savedMonth());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -55,7 +55,7 @@ export default function Budgets() {
           <h2>Budgets</h2>
           <p>Set monthly category limits and watch spending progress.</p>
         </div>
-        <input type="month" value={month} onChange={(event) => setMonth(event.target.value)} />
+        <input type="month" value={month} onChange={(event) => setMonth(saveMonth(event.target.value))} />
       </div>
       {error ? <p className="error">{error}</p> : null}
       <section className="panel">

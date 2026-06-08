@@ -2,14 +2,16 @@ import { useEffect, useState } from "react";
 import api from "../api.js";
 import ExpenseForm from "../components/ExpenseForm.jsx";
 import DataTable from "../components/DataTable.jsx";
-import { currentMonth, money } from "../helpers.js";
+import { money, savedMonth, saveMonth } from "../helpers.js";
 import { paymentMethods } from "../constants.js";
 
 export default function Expenses() {
   const [expenses, setExpenses] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [creditCards, setCreditCards] = useState([]);
+  const [bankAccounts, setBankAccounts] = useState([]);
   const [editing, setEditing] = useState(null);
-  const [filters, setFilters] = useState({ month: currentMonth(), category: "", payment_method: "" });
+  const [filters, setFilters] = useState({ month: savedMonth(), category: "", payment_method: "" });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -17,12 +19,16 @@ export default function Expenses() {
     setLoading(true);
     setError("");
     try {
-      const [expensesResponse, categoriesResponse] = await Promise.all([
+      const [expensesResponse, categoriesResponse, creditCardsResponse, bankAccountsResponse] = await Promise.all([
         api.get("/expenses", { params: filters }),
-        api.get("/categories")
+        api.get("/categories"),
+        api.get("/credit-cards"),
+        api.get("/banks")
       ]);
       setExpenses(expensesResponse.data);
       setCategories(categoriesResponse.data);
+      setCreditCards(creditCardsResponse.data);
+      setBankAccounts(bankAccountsResponse.data);
     } catch (err) {
       setError("Unable to load expenses.");
     } finally {
@@ -63,6 +69,8 @@ export default function Expenses() {
         <h3>{editing ? "Edit Expense" : "Add Expense"}</h3>
         <ExpenseForm
           categories={categories}
+          creditCards={creditCards}
+          bankAccounts={bankAccounts}
           editing={editing}
           onSubmit={saveExpense}
           onCancel={() => setEditing(null)}
@@ -74,7 +82,7 @@ export default function Expenses() {
           <input
             type="month"
             value={filters.month}
-            onChange={(event) => setFilters({ ...filters, month: event.target.value })}
+            onChange={(event) => setFilters({ ...filters, month: saveMonth(event.target.value) })}
           />
           <select
             value={filters.category}
@@ -108,6 +116,12 @@ export default function Expenses() {
               { key: "category", label: "Category" },
               { key: "description", label: "Description" },
               { key: "payment_method", label: "Payment" },
+              { key: "credit_card_name", label: "Card", render: (row) => row.credit_card_name || "" },
+              {
+                key: "bank_account_name",
+                label: "Bank",
+                render: (row) => row.bank_account_name ? `${row.debit_card_name || row.bank_account_name} - ${row.bank_account_bank}` : ""
+              },
               { key: "amount", label: "Amount", render: (row) => money(row.amount) }
             ]}
             rows={expenses}

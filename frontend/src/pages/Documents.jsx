@@ -7,6 +7,8 @@ import { money } from "../helpers.js";
 export default function Documents() {
   const [documents, setDocuments] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [creditCards, setCreditCards] = useState([]);
+  const [bankAccounts, setBankAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -14,12 +16,16 @@ export default function Documents() {
     setLoading(true);
     setError("");
     try {
-      const [documentsResponse, categoriesResponse] = await Promise.all([
+      const [documentsResponse, categoriesResponse, creditCardsResponse, bankAccountsResponse] = await Promise.all([
         api.get("/documents"),
-        api.get("/categories")
+        api.get("/categories"),
+        api.get("/credit-cards"),
+        api.get("/banks")
       ]);
       setDocuments(documentsResponse.data);
       setCategories(categoriesResponse.data);
+      setCreditCards(creditCardsResponse.data);
+      setBankAccounts(bankAccountsResponse.data);
     } catch (err) {
       setError("Unable to load documents.");
     } finally {
@@ -54,7 +60,12 @@ export default function Documents() {
       {error ? <p className="error">{error}</p> : null}
       <section className="panel">
         <h3>Upload Bill Or Spend</h3>
-        <DocumentUploadForm categories={categories} onSubmit={uploadDocument} />
+        <DocumentUploadForm
+          categories={categories}
+          creditCards={creditCards}
+          bankAccounts={bankAccounts}
+          onSubmit={uploadDocument}
+        />
       </section>
       <section className="panel">
         {loading ? (

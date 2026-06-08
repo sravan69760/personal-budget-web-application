@@ -9,6 +9,8 @@ const budgetsRouter = require("./routes/budgets");
 const documentsRouter = require("./routes/documents");
 const categoriesRouter = require("./routes/categories");
 const dashboardRouter = require("./routes/dashboard");
+const creditCardsRouter = require("./routes/creditCards");
+const banksRouter = require("./routes/banks");
 
 const app = express();
 const PORT = 5000;
@@ -27,6 +29,8 @@ app.use("/api/budgets", budgetsRouter);
 app.use("/api/documents", documentsRouter);
 app.use("/api/categories", categoriesRouter);
 app.use("/api/dashboard", dashboardRouter);
+app.use("/api/credit-cards", creditCardsRouter);
+app.use("/api/banks", banksRouter);
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });

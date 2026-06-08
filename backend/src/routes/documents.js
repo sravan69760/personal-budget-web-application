@@ -4,6 +4,8 @@ const express = require("express");
 const multer = require("multer");
 const { all, get, run } = require("../db");
 const { toNumber } = require("../utils");
+const { adjustCreditCardBalance } = require("../creditCardMath");
+const { adjustBankAccountBalance } = require("../bankMath");
 
 const router = express.Router();
 const uploadDir = path.join(__dirname, "..", "..", "uploads");
@@ -55,7 +57,9 @@ router.post("/upload", upload.single("file"), async (req, res, next) => {
       status,
       document_type,
       auto_create_expense,
-      payment_method
+      payment_method,
+      credit_card_id,
+      bank_account_id
     } = req.body;
     const relativePath = `/uploads/${req.file.filename}`;
     const numericAmount = toNumber(amount);
@@ -81,17 +85,25 @@ router.post("/upload", upload.single("file"), async (req, res, next) => {
     const created = await get("SELECT * FROM documents WHERE id = ?", [result.id]);
 
     if (auto_create_expense === "true" && numericAmount) {
+      const selectedCardId =
+        payment_method === "Credit Card" || category === "Credit Card" ? credit_card_id || null : null;
+      const selectedBankId = payment_method === "Debit Card" ? bank_account_id || null : null;
       await run(
-        `INSERT INTO expenses (amount, category, description, expense_date, payment_method)
-         VALUES (?, ?, ?, ?, ?)`,
+        `INSERT INTO expenses
+          (amount, category, description, expense_date, payment_method, credit_card_id, bank_account_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
           numericAmount,
           category || "Other",
           `${document_type || "document"}: ${documentTitle}`,
           documentDate,
-          payment_method || "Debit Card"
+          payment_method || "Debit Card",
+          selectedCardId,
+          selectedBankId
         ]
       );
+      await adjustCreditCardBalance(selectedCardId, numericAmount);
+      await adjustBankAccountBalance(selectedBankId, numericAmount);
     }
 
     res.status(201).json(created);

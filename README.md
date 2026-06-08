@@ -57,7 +57,13 @@ The frontend runs at `http://localhost:5173`.
 ## Features
 
 - Dashboard totals for selected month
+- Selected month is remembered while moving between month-based pages
 - Expense CRUD with month, category, and payment method filters
+- Bank account tracking for debit-card spending
+- Debit-card expenses automatically reduce the selected bank account balance
+- Credit card tracking for balances, limits, available credit, due dates, and payments
+- Credit card expenses automatically increase selected card balance
+- Credit card payments automatically reduce owed balance and update paid totals
 - Income CRUD
 - Local PDF/JPG/JPEG/PNG bill and receipt upload
 - Manual amount, category, date, and payment method entry for uploaded bills and receipts

@@ -6,10 +6,12 @@ const initialState = {
   category: "Other",
   description: "",
   expense_date: new Date().toISOString().slice(0, 10),
-  payment_method: paymentMethods[2]
+  payment_method: paymentMethods[2],
+  credit_card_id: "",
+  bank_account_id: ""
 };
 
-export default function ExpenseForm({ categories, editing, onSubmit, onCancel }) {
+export default function ExpenseForm({ categories, creditCards, bankAccounts, editing, onSubmit, onCancel }) {
   const [form, setForm] = useState(initialState);
 
   useEffect(() => {
@@ -17,14 +19,40 @@ export default function ExpenseForm({ categories, editing, onSubmit, onCancel })
   }, [editing]);
 
   function updateField(event) {
-    setForm({ ...form, [event.target.name]: event.target.value });
+    const next = { ...form, [event.target.name]: event.target.value };
+    if (
+      event.target.name === "payment_method" &&
+      event.target.value !== "Credit Card" &&
+      next.category !== "Credit Card"
+    ) {
+      next.credit_card_id = "";
+    }
+    if (event.target.name === "payment_method" && event.target.value !== "Debit Card") {
+      next.bank_account_id = "";
+    }
+    if (
+      event.target.name === "category" &&
+      event.target.value !== "Credit Card" &&
+      next.payment_method !== "Credit Card"
+    ) {
+      next.credit_card_id = "";
+    }
+    setForm(next);
   }
 
   function submit(event) {
     event.preventDefault();
-    onSubmit({ ...form, amount: Number(form.amount) });
+    onSubmit({
+      ...form,
+      amount: Number(form.amount),
+      credit_card_id: form.credit_card_id ? Number(form.credit_card_id) : null,
+      bank_account_id: form.bank_account_id ? Number(form.bank_account_id) : null
+    });
     setForm(initialState);
   }
+
+  const needsCreditCard = form.category === "Credit Card" || form.payment_method === "Credit Card";
+  const needsBankAccount = form.payment_method === "Debit Card";
 
   return (
     <form className="form-grid" onSubmit={submit}>
@@ -56,6 +84,32 @@ export default function ExpenseForm({ categories, editing, onSubmit, onCancel })
           ))}
         </select>
       </label>
+      {needsCreditCard ? (
+        <label>
+          Credit Card
+          <select name="credit_card_id" value={form.credit_card_id || ""} onChange={updateField} required>
+            <option value="">Select card</option>
+            {creditCards.map((card) => (
+              <option key={card.id} value={card.id}>
+                {card.card_name} - {card.bank_name}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
+      {needsBankAccount ? (
+        <label>
+          Bank Debit Card
+          <select name="bank_account_id" value={form.bank_account_id || ""} onChange={updateField} required>
+            <option value="">Select bank</option>
+            {bankAccounts.map((account) => (
+              <option key={account.id} value={account.id}>
+                {account.debit_card_name || account.account_name} - {account.bank_name}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
       <label className="wide">
         Description
         <input name="description" value={form.description} onChange={updateField} />

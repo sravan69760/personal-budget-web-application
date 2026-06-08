@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import api from "../api.js";
 import IncomeForm from "../components/IncomeForm.jsx";
 import DataTable from "../components/DataTable.jsx";
-import { currentMonth, money } from "../helpers.js";
+import { money, savedMonth, saveMonth } from "../helpers.js";
 
 export default function Income() {
   const [income, setIncome] = useState([]);
   const [editing, setEditing] = useState(null);
-  const [month, setMonth] = useState(currentMonth());
+  const [month, setMonth] = useState(savedMonth());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -50,7 +50,7 @@ export default function Income() {
           <h2>Income</h2>
           <p>Track paychecks, reimbursements, and other income.</p>
         </div>
-        <input type="month" value={month} onChange={(event) => setMonth(event.target.value)} />
+        <input type="month" value={month} onChange={(event) => setMonth(saveMonth(event.target.value))} />
       </div>
       {error ? <p className="error">{error}</p> : null}
       <section className="panel">

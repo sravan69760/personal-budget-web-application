@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { currentMonth } from "../helpers.js";
+import { savedMonth } from "../helpers.js";
 
 const initialState = {
   category: "Other",
-  month: currentMonth(),
+  month: savedMonth(),
   amount: ""
 };
 

@@ -51,6 +51,32 @@ router.get("/summary", async (req, res, next) => {
       [month]
     );
 
+    const creditCards = await get(
+      `SELECT
+        COALESCE(SUM(current_balance), 0) AS totalOwed,
+        COALESCE(SUM(credit_limit), 0) AS totalLimit,
+        COALESCE(SUM(available_credit), 0) AS availableCredit,
+        COALESCE(SUM(total_paid), 0) AS totalPaid
+       FROM credit_cards`
+    );
+
+    const upcomingCreditCardPayments = await all(
+      `SELECT id, card_name, bank_name, current_balance, due_date, payment_status
+       FROM credit_cards
+       WHERE payment_status != 'paid'
+        AND due_date >= date('now')
+       ORDER BY due_date ASC
+       LIMIT 5`
+    );
+
+    const banks = await get(
+      `SELECT
+        COALESCE(SUM(current_balance), 0) AS totalBalance,
+        COALESCE(SUM(total_spent), 0) AS totalSpent,
+        COALESCE(SUM(available_balance), 0) AS availableBalance
+       FROM bank_accounts`
+    );
+
     const totalIncome = Number(income.total || 0);
     const totalExpenses = Number(expenses.total || 0);
     const totalBudget = Number(budgets.total || 0);
@@ -65,7 +91,19 @@ router.get("/summary", async (req, res, next) => {
       upcomingBills,
       recentExpenses,
       spendingByPaymentMethod,
-      spendingByCategory
+      spendingByCategory,
+      creditCards: {
+        totalOwed: Number(creditCards.totalOwed || 0),
+        totalLimit: Number(creditCards.totalLimit || 0),
+        availableCredit: Number(creditCards.availableCredit || 0),
+        totalPaid: Number(creditCards.totalPaid || 0),
+        upcomingPayments: upcomingCreditCardPayments
+      },
+      banks: {
+        totalBalance: Number(banks.totalBalance || 0),
+        totalSpent: Number(banks.totalSpent || 0),
+        availableBalance: Number(banks.availableBalance || 0)
+      }
     });
   } catch (error) {
     next(error);
